@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ModelLayer\ModelLayer.csproj" />
     <ProjectReference Include="..\ViewLayer\ViewLayer.csproj" />
   </ItemGroup>
 

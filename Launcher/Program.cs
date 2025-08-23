@@ -1,3 +1,4 @@
+using ModelLayer;
 using ViewLayer;
 
 namespace Launcher
@@ -13,7 +14,8 @@ namespace Launcher
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
-            Application.Run(new BaseForm());
+
+            Application.Run(new BaseForm(new Model()));
         }
     }
 }
