@@ -43,6 +43,61 @@ namespace ViewLayer.Components
 			}
 		}
 
+		private string text = ""; // 効かない UserControlは作成時に自動的にbase.Textプロパティにコントロール名（roundedButtonControl1）を設定
+		/// <summary>
+		/// ボタンに表示するテキストを取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ボタンに表示するテキストを設定します。")]
+		[DefaultValue("")]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+		public override string Text
+		{
+			get { return text; }
+			set
+			{
+				text = value ?? string.Empty;
+				base.Text = text; // ベースクラスのTextプロパティも更新
+				Invalidate(); // 再描画
+			}
+		}
+
+		private Font font = new Font("Yu Gothic UI", 9F, FontStyle.Regular); // デフォルトフォント
+		/// <summary>
+		/// ボタンのテキストに使用するフォントを取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ボタンのテキストに使用するフォントを設定します。")]
+		public override Font Font
+		{
+			get { return font; }
+			set
+			{
+				font = value ?? new Font("Yu Gothic UI", 9F, FontStyle.Regular);
+				Invalidate(); // 再描画
+			}
+		}
+
+		private Color foreColor = Color.Black; // デフォルト文字色
+		/// <summary>
+		/// ボタンのテキストの色を取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ボタンのテキストの色を設定します。")]
+		[DefaultValue(typeof(Color), "Black")]
+		public override Color ForeColor
+		{
+			get { return foreColor; }
+			set
+			{
+				foreColor = value;
+				Invalidate(); // 再描画
+			}
+		}
+
 		public RoundedButtonControl()
 		{
 			Size = new Size(100, 40);
@@ -83,6 +138,41 @@ namespace ViewLayer.Components
 				using (Pen pen = new Pen(Color.Black, penWidth))
 				{
 					e.Graphics.DrawPath(pen, path);
+				}
+			}
+
+			// テキストを描画
+			if (!string.IsNullOrEmpty(text))
+			{
+				DrawText(e.Graphics, rect);
+			}
+		}
+
+		/// <summary>
+		/// 指定されたGraphicsオブジェクトと矩形領域にテキストを中央配置で描画します。
+		/// </summary>
+		/// <param name="graphics">描画に使用するGraphicsオブジェクト</param>
+		/// <param name="rect">テキストを描画する矩形領域</param>
+		/// <remarks>
+		/// テキストは常に矩形の中央に配置されます。
+		/// ForeColorプロパティとFontプロパティを使用してテキストを描画します。
+		/// テキストが矩形領域を超える場合は、適切にクリッピングされます。
+		/// </remarks>
+		private void DrawText(Graphics graphics, Rectangle rect)
+		{
+			if (string.IsNullOrEmpty(text) || font == null)
+				return;
+
+			using (SolidBrush textBrush = new SolidBrush(foreColor))
+			{
+				// StringFormatを設定してテキストを中央配置
+				using (StringFormat stringFormat = new StringFormat())
+				{
+					stringFormat.Alignment = StringAlignment.Center;
+					stringFormat.LineAlignment = StringAlignment.Center;
+
+					// テキストを描画
+					graphics.DrawString(text, font, textBrush, rect, stringFormat);
 				}
 			}
 		}

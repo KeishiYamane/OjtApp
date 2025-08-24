@@ -11,11 +11,16 @@
 		/// 使用中のリソースをすべてクリーンアップします。
 		/// </summary>
 		/// <param name="disposing">マネージド リソースを破棄する場合は true を指定し、その他の場合は false を指定します。</param>
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
-			if (disposing && (components != null))
+			if (disposing)
 			{
-				components.Dispose();
+				if (components != null)
+				{
+					components.Dispose();
+				}
+				// カスタムリソースの解放
+				font?.Dispose();
 			}
 			base.Dispose(disposing);
 		}
@@ -26,7 +31,7 @@
 		/// デザイナー サポートに必要なメソッドです。このメソッドの内容を 
 		/// コード エディターで変更しないでください。
 		/// </summary>
-		private void InitializeComponent ()
+		private void InitializeComponent()
 		{
 			components = new System.ComponentModel.Container();
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
