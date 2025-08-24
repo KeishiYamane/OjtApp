@@ -98,6 +98,29 @@ namespace ViewLayer.Components
 			}
 		}
 
+
+
+		private int gradationOffset = 40; // デフォルトオフセット値
+		/// <summary>
+		/// グラデーション終点の基準色からのオフセット値を取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("RoundButtonBase")]
+		[Description("グラデーション終点の基準色からのオフセット値を設定します。")]
+		[DefaultValue(40)]
+		public virtual int GradationOffset
+		{
+			get { return gradationOffset; }
+			set
+			{
+				if (gradationOffset != value)
+				{
+					gradationOffset = value;
+					Invalidate(); // 再描画
+				}
+			}
+		}
+
 		public RoundedButtonControl()
 		{
 			Size = new Size(100, 40);
@@ -128,10 +151,11 @@ namespace ViewLayer.Components
 
 			using (GraphicsPath path = GetRoundedRectanglePath(rect, cornerRadius))
 			{
-				// 背景色で塗りつぶし
-				using (SolidBrush brush = new SolidBrush(backgroundColor))
+				// グラデーション描画（縦方向固定、下から上に明るくなる）
+				Color endColor = CalculateGradationEndColor(backgroundColor, gradationOffset);
+				using (LinearGradientBrush gradientBrush = new LinearGradientBrush(rect, endColor, backgroundColor, LinearGradientMode.Vertical))
 				{
-					e.Graphics.FillPath(brush, path);
+					e.Graphics.FillPath(gradientBrush, path);
 				}
 
 				// 枠線を描画
@@ -175,6 +199,26 @@ namespace ViewLayer.Components
 					graphics.DrawString(text, font, textBrush, rect, stringFormat);
 				}
 			}
+		}
+
+		/// <summary>
+		/// 基準色とオフセット値からグラデーション終点色を計算します。
+		/// </summary>
+		/// <param name="baseColor">基準となる色</param>
+		/// <param name="offset">明度のオフセット値（正の値で明るく、負の値で暗くなります）</param>
+		/// <returns>計算されたグラデーション終点色</returns>
+		/// <remarks>
+		/// RGB各成分にオフセット値を加算し、0-255の範囲内に制限します。
+		/// オフセット値が正の場合は色が明るくなり、負の場合は暗くなります。
+		/// </remarks>
+		private Color CalculateGradationEndColor(Color baseColor, int offset)
+		{
+			// RGB各成分にオフセットを適用し、0-255の範囲内に制限
+			int red = Math.Max(0, Math.Min(255, baseColor.R + offset));
+			int green = Math.Max(0, Math.Min(255, baseColor.G + offset));
+			int blue = Math.Max(0, Math.Min(255, baseColor.B + offset));
+
+			return Color.FromArgb(red, green, blue);
 		}
 
 		/// <summary>
