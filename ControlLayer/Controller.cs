@@ -4,11 +4,11 @@ namespace ControlLayer
 {
 	public class Controller
 	{
-		private Model model;
+		private Model _model;
 
 		public Controller (Model model)
 		{
-			this.model = model;
+			_model = model;
 		}
 	}
 }
