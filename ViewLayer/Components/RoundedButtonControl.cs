@@ -124,6 +124,7 @@ namespace ViewLayer.Components
 		public RoundedButtonControl()
 		{
 			Size = new Size(100, 40);
+			Cursor = Cursors.Hand; // 手の形のカーソルを設定
 		}
 
 		/// <summary>
