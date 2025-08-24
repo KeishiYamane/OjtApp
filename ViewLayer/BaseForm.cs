@@ -13,6 +13,8 @@ namespace ViewLayer
 		{
 			InitializeComponent();
 			this._model = model;
+			// モデルのイベントを購読
+			_model.Calculated += CalculateResult;
 			_controller = new Controller(model);
 		}
 
@@ -25,10 +27,17 @@ namespace ViewLayer
 			// 計算
 			// var result = numeric1 + numeric2;
 			// var result = Add(numeric1,numeric2);
-			var result = _controller.Add(numeric1, numeric2);
+			// var result = _controller.Add(numeric1, numeric2);
+			_controller.Add(numeric1, numeric2);
 
 			// 表示
-			_resultLabel.Text = result.ToString();
+			// _resultLabel.Text = result.ToString();
+		}
+
+		private void CalculateResult (object? sender, decimal e)
+		{
+			// 表示
+			_resultLabel.Text = e.ToString();
 		}
 
 		// ビューに直接書くのは避ける
