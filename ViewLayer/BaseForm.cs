@@ -15,5 +15,18 @@ namespace ViewLayer
 			this._model = model;
 			_controller = new Controller(model);
 		}
+
+		private void button1_Click (object sender, EventArgs e)
+		{
+			// “ü—Í’l‚ÌŽæ“¾
+			var numeric1 = _numeric1.Value;
+			var numeric2 = _numeric2.Value;
+
+			// ŒvŽZ
+			var result = numeric1 + numeric2;
+
+			// •\Ž¦
+			_resultLabel.Text = result.ToString();
+		}
 	}
 }
