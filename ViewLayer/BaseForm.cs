@@ -23,10 +23,16 @@ namespace ViewLayer
 			var numeric2 = _numeric2.Value;
 
 			// ŒvŽZ
-			var result = numeric1 + numeric2;
+			// var result = numeric1 + numeric2;
+			var result = Add(numeric1,numeric2);
 
 			// •\Ž¦
 			_resultLabel.Text = result.ToString();
+		}
+
+		private Decimal Add (Decimal a, Decimal b)
+		{
+			return a + b;
 		}
 	}
 }
