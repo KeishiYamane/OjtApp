@@ -24,13 +24,15 @@ namespace ViewLayer
 
 			// 計算
 			// var result = numeric1 + numeric2;
-			var result = Add(numeric1,numeric2);
+			// var result = Add(numeric1,numeric2);
+			var result = _controller.Add(numeric1, numeric2);
 
 			// 表示
 			_resultLabel.Text = result.ToString();
 		}
 
-		private Decimal Add (Decimal a, Decimal b)
+		// ビューに直接書くのは避ける
+		private decimal Add (Decimal a, Decimal b)
 		{
 			return a + b;
 		}

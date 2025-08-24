@@ -10,5 +10,10 @@ namespace ControlLayer
 		{
 			_model = model;
 		}
+
+		public decimal Add (decimal numeric1, decimal numeric2)
+		{
+			return _model.Add(numeric1, numeric2);
+		}
 	}
 }
