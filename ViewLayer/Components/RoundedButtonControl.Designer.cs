@@ -31,10 +31,18 @@
 		/// デザイナー サポートに必要なメソッドです。このメソッドの内容を 
 		/// コード エディターで変更しないでください。
 		/// </summary>
-		private void InitializeComponent()
+		private void InitializeComponent ()
 		{
-			components = new System.ComponentModel.Container();
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			SuspendLayout();
+			// 
+			// RoundedButtonControl
+			// 
+			AutoScaleDimensions = new SizeF(7F, 15F);
+			AutoScaleMode = AutoScaleMode.Font;
+			Name = "RoundedButtonControl";
+			MouseDown += RoundedButtonControl_MouseDown;
+			MouseUp += RoundedButtonControl_MouseUp;
+			ResumeLayout(false);
 		}
 
 		#endregion

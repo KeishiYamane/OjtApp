@@ -38,8 +38,11 @@ namespace ViewLayer.Components
 			get { return backgroundColor; }
 			set
 			{
-				backgroundColor = value;
-				Invalidate(); // 再描画
+				if (backgroundColor != value)
+				{
+					backgroundColor = value;
+					Invalidate(); // 再描画
+				}
 			}
 		}
 
@@ -121,8 +124,9 @@ namespace ViewLayer.Components
 			}
 		}
 
-		public RoundedButtonControl()
+		public RoundedButtonControl ()
 		{
+			InitializeComponent();
 			Size = new Size(100, 40);
 			Cursor = Cursors.Hand; // 手の形のカーソルを設定
 		}
@@ -135,7 +139,7 @@ namespace ViewLayer.Components
 		/// 角丸矩形の背景と枠線を、設定された色で描画します。
 		/// アンチエイリアシングを有効にして滑らかな描画を行います。
 		/// </remarks>
-		protected override void OnPaint(PaintEventArgs e)
+		protected override void OnPaint (PaintEventArgs e)
 		{
 			base.OnPaint(e);
 
@@ -183,7 +187,7 @@ namespace ViewLayer.Components
 		/// ForeColorプロパティとFontプロパティを使用してテキストを描画します。
 		/// テキストが矩形領域を超える場合は、適切にクリッピングされます。
 		/// </remarks>
-		private void DrawText(Graphics graphics, Rectangle rect)
+		private void DrawText (Graphics graphics, Rectangle rect)
 		{
 			if (string.IsNullOrEmpty(text) || font == null)
 				return;
@@ -212,7 +216,7 @@ namespace ViewLayer.Components
 		/// RGB各成分にオフセット値を加算し、0-255の範囲内に制限します。
 		/// オフセット値が正の場合は色が明るくなり、負の場合は暗くなります。
 		/// </remarks>
-		private Color CalculateGradationEndColor(Color baseColor, int offset)
+		private Color CalculateGradationEndColor (Color baseColor, int offset)
 		{
 			// RGB各成分にオフセットを適用し、0-255の範囲内に制限
 			int red = Math.Max(0, Math.Min(255, baseColor.R + offset));
@@ -233,7 +237,7 @@ namespace ViewLayer.Components
 		/// 矩形のサイズに合わせて直径を制限します。
 		/// 戻り値のGraphicsPathは呼び出し元でDisposeする必要があります。
 		/// </remarks>
-		private GraphicsPath GetRoundedRectanglePath(Rectangle rect, int radius)
+		private GraphicsPath GetRoundedRectanglePath (Rectangle rect, int radius)
 		{
 			GraphicsPath path = new GraphicsPath();
 
@@ -250,6 +254,16 @@ namespace ViewLayer.Components
 			path.CloseFigure();
 
 			return path;
+		}
+
+		private void RoundedButtonControl_MouseUp (object sender, MouseEventArgs e)
+		{
+			Location = new Point(Location.X - 3, Location.Y - 3); // クリック後に位置を戻す
+		}
+
+		private void RoundedButtonControl_MouseDown (object sender, MouseEventArgs e)
+		{
+			Location = new Point(Location.X + 3, Location.Y + 3); // クリック時に位置をずらす
 		}
 	}
 }
