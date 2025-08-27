@@ -34,6 +34,17 @@ namespace ViewLayer.Components
 					isChecked = value;
 					Invalidate(); // 再描画
 				}
+
+				if (isChecked)
+				{
+					// 選択状態の場合、背景色をSelectedColorに設定
+					BackgroundColor = selectedColor;
+				}
+				else
+				{
+					// 未選択状態の場合、背景色を元のBackgroundColorに設定
+					BackgroundColor = unSelectedColor;
+				}
 			}
 		}
 
@@ -51,10 +62,23 @@ namespace ViewLayer.Components
 			set
 			{
 				selectedColor = value;
-				//if (isChecked)
-				//{
-				//	Invalidate(); // 選択状態の場合は再描画
-				//}
+			}
+		}
+
+		private Color unSelectedColor = Color.FromArgb(128, 128, 128);
+		/// <summary>
+		/// ラジオボタンが選択されていない時の背景色を取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ラジオボタンが選択されていない時の背景色を取得または設定します。")]
+		[DefaultValue(typeof(Color), "128, 128, 128")]
+		public Color UnSelectedColor
+		{
+			get { return unSelectedColor; }
+			set
+			{
+				unSelectedColor = value;
 			}
 		}
 
@@ -93,28 +117,6 @@ namespace ViewLayer.Components
 					}
 				}
 				Checked = true;
-			}
-		}
-
-		/// <summary>
-		/// コントロールの描画処理を行います。
-		/// </summary>
-		/// <param name="e">描画イベントの引数</param>
-		/// <remarks>
-		/// 選択状態に応じて背景色を変更して描画します。
-		/// 選択時はSelectedColorプロパティ、未選択時はBackgroundColorプロパティを使用します。
-		/// </remarks>
-		protected override void OnPaint (PaintEventArgs e)
-		{
-
-			// 基底クラスの描画処理を実行
-			base.OnPaint(e);
-
-			// 選択状態に応じて背景色を一時的に変更
-			Color originalBackgroundColor = BackgroundColor;
-			if (isChecked)
-			{
-				BackgroundColor = selectedColor;
 			}
 		}
 	}
