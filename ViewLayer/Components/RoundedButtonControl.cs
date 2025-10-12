@@ -25,7 +25,7 @@ namespace ViewLayer.Components
 			}
 		}
 
-		private Color backgroundColor = Color.LightSkyBlue; // デフォルト背景色
+		private Color backgroundColor = Color.Gray; // デフォルト背景色
 		/// <summary>
 		/// ボタンの背景色を取得または設定します。
 		/// </summary>
