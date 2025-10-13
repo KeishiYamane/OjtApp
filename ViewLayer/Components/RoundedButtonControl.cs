@@ -25,14 +25,14 @@ namespace ViewLayer.Components
 			}
 		}
 
-		private Color backgroundColor = Color.Gray; // デフォルト背景色
+		private Color backgroundColor = Color.FromArgb(189, 189, 189); // デフォルト背景色
 		/// <summary>
 		/// ボタンの背景色を取得または設定します。
 		/// </summary>
 		[Browsable(true)]
 		[Category("Appearance")]
 		[Description("ボタンの背景色を設定します。RGB値で指定可能です。")]
-		[DefaultValue(typeof(Color), "LightBlue")]
+		[DefaultValue(typeof(Color), "189, 189, 189")]
 		public Color BackgroundColor
 		{
 			get { return backgroundColor; }
