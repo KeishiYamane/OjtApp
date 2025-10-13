@@ -124,11 +124,62 @@ namespace ViewLayer.Components
 			}
 		}
 
-		public RoundedButtonControl ()
+		private Color shadowColor = Color.FromArgb(100, 0, 0, 0); // デフォルト影色（半透明の黒）
+		/// <summary>
+		/// ボタンの影の色を取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ボタンの影の色を設定します。アルファ値で透明度を調整できます。")]
+		[DefaultValue(typeof(Color), "100, 0, 0, 0")]
+		public Color ShadowColor
+		{
+			get { return shadowColor; }
+			set
+			{
+				if (shadowColor != value)
+				{
+					shadowColor = value;
+					Invalidate(); // 再描画
+				}
+			}
+		}
+
+		private int shadowSize = 3; // デフォルト影サイズ
+		/// <summary>
+		/// ボタンの影のサイズを取得または設定します。
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ボタンの影のサイズを設定します。0で影なし。")]
+		[DefaultValue(3)]
+		public int ShadowSize
+		{
+			get { return shadowSize; }
+			set
+			{
+				if (value < 0) value = 0;
+				if (shadowSize != value)
+				{
+					shadowSize = value;
+					Invalidate(); // 再描画
+				}
+			}
+		}
+
+		private int originalShadowSize; // マウスダウン時の元の影サイズを保持
+		private bool isPressed = false; // ボタンが押されているかどうかのフラグ
+
+		public RoundedButtonControl()
 		{
 			InitializeComponent();
 			Size = new Size(100, 40);
 			Cursor = Cursors.Hand; // 手の形のカーソルを設定
+								   // 描画の最適化
+			SetStyle(ControlStyles.OptimizedDoubleBuffer | ControlStyles.UserPaint | ControlStyles.AllPaintingInWmPaint, true);
+			SetStyle(ControlStyles.ResizeRedraw, true);
+			SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+			BackColor = Color.Transparent;
 		}
 
 		/// <summary>
@@ -136,29 +187,46 @@ namespace ViewLayer.Components
 		/// </summary>
 		/// <param name="e">描画イベントの引数</param>
 		/// <remarks>
-		/// 角丸矩形の背景と枠線を、設定された色で描画します。
+		/// 影→枠線→内側の面→テキストの順で描画します。
 		/// アンチエイリアシングを有効にして滑らかな描画を行います。
 		/// </remarks>
-		protected override void OnPaint (PaintEventArgs e)
+		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
 
 			e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
-			// 枠線の太さを考慮して描画領域を調整
+			// 影を描画
+			if (shadowSize > 0)
+			{
+				Rectangle shadowRect = new Rectangle(
+					shadowSize,
+					shadowSize,
+					ClientRectangle.Width - shadowSize,
+					ClientRectangle.Height - shadowSize
+				);
+
+				using (GraphicsPath shadowPath = GetRoundedRectanglePath(shadowRect, cornerRadius))
+				using (SolidBrush shadowBrush = new SolidBrush(shadowColor))
+				{
+					e.Graphics.FillPath(shadowBrush, shadowPath);
+				}
+			}
+
+			// メインボタンの描画領域（影の分を差し引く）
 			int penWidth = 1;
-			Rectangle rect = new Rectangle(
+			Rectangle buttonRect = new Rectangle(
 				penWidth / 2,
 				penWidth / 2,
-				ClientRectangle.Width - penWidth,
-				ClientRectangle.Height - penWidth
+				ClientRectangle.Width - shadowSize - penWidth,
+				ClientRectangle.Height - shadowSize - penWidth
 			);
 
-			using (GraphicsPath path = GetRoundedRectanglePath(rect, cornerRadius))
+			using (GraphicsPath path = GetRoundedRectanglePath(buttonRect, cornerRadius))
 			{
 				// グラデーション描画（縦方向固定、下から上に明るくなる）
 				Color endColor = CalculateGradationEndColor(backgroundColor, gradationOffset);
-				using (LinearGradientBrush gradientBrush = new LinearGradientBrush(rect, endColor, backgroundColor, LinearGradientMode.Vertical))
+				using (LinearGradientBrush gradientBrush = new LinearGradientBrush(buttonRect, endColor, backgroundColor, LinearGradientMode.Vertical))
 				{
 					e.Graphics.FillPath(gradientBrush, path);
 				}
@@ -173,7 +241,7 @@ namespace ViewLayer.Components
 			// テキストを描画
 			if (!string.IsNullOrEmpty(text))
 			{
-				DrawText(e.Graphics, rect);
+				DrawText(e.Graphics, buttonRect);
 			}
 		}
 
@@ -187,7 +255,7 @@ namespace ViewLayer.Components
 		/// ForeColorプロパティとFontプロパティを使用してテキストを描画します。
 		/// テキストが矩形領域を超える場合は、適切にクリッピングされます。
 		/// </remarks>
-		private void DrawText (Graphics graphics, Rectangle rect)
+		private void DrawText(Graphics graphics, Rectangle rect)
 		{
 			if (string.IsNullOrEmpty(text) || font == null)
 				return;
@@ -216,7 +284,7 @@ namespace ViewLayer.Components
 		/// RGB各成分にオフセット値を加算し、0-255の範囲内に制限します。
 		/// オフセット値が正の場合は色が明るくなり、負の場合は暗くなります。
 		/// </remarks>
-		private Color CalculateGradationEndColor (Color baseColor, int offset)
+		private Color CalculateGradationEndColor(Color baseColor, int offset)
 		{
 			// RGB各成分にオフセットを適用し、0-255の範囲内に制限
 			int red = Math.Max(0, Math.Min(255, baseColor.R + offset));
@@ -237,7 +305,7 @@ namespace ViewLayer.Components
 		/// 矩形のサイズに合わせて直径を制限します。
 		/// 戻り値のGraphicsPathは呼び出し元でDisposeする必要があります。
 		/// </remarks>
-		private GraphicsPath GetRoundedRectanglePath (Rectangle rect, int radius)
+		private GraphicsPath GetRoundedRectanglePath(Rectangle rect, int radius)
 		{
 			GraphicsPath path = new GraphicsPath();
 
@@ -256,14 +324,27 @@ namespace ViewLayer.Components
 			return path;
 		}
 
-		private void RoundedButtonControl_MouseUp (object sender, MouseEventArgs e)
+		private void RoundedButtonControl_MouseUp(object sender, MouseEventArgs e)
 		{
-			Location = new Point(Location.X - 3, Location.Y - 3); // クリック後に位置を戻す
+			if (isPressed)
+			{
+				Location = new Point(Location.X - originalShadowSize, Location.Y - originalShadowSize); // クリック後に位置を戻す
+				shadowSize = originalShadowSize; // 影を復元
+				isPressed = false;
+				Invalidate(); // 再描画
+			}
 		}
 
-		private void RoundedButtonControl_MouseDown (object sender, MouseEventArgs e)
+		private void RoundedButtonControl_MouseDown(object sender, MouseEventArgs e)
 		{
-			Location = new Point(Location.X + 3, Location.Y + 3); // クリック時に位置をずらす
+			if (!isPressed)
+			{
+				originalShadowSize = shadowSize; // 元の影サイズを保存
+				Location = new Point(Location.X + shadowSize, Location.Y + shadowSize); // 影のサイズ分だけ位置をずらす
+				shadowSize = 0; // 影を消す
+				isPressed = true;
+				Invalidate(); // 再描画
+			}
 		}
 	}
 }
