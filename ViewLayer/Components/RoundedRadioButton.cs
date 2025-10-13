@@ -65,14 +65,14 @@ namespace ViewLayer.Components
 			}
 		}
 
-		private Color unSelectedColor = Color.FromArgb(128, 128, 128);
+		private Color unSelectedColor = Color.FromArgb(189, 189, 189);
 		/// <summary>
 		/// ラジオボタンが選択されていない時の背景色を取得または設定します。
 		/// </summary>
 		[Browsable(true)]
 		[Category("Appearance")]
 		[Description("ラジオボタンが選択されていない時の背景色を取得または設定します。")]
-		[DefaultValue(typeof(Color), "128, 128, 128")]
+		[DefaultValue(typeof(Color), "189, 189, 189")]
 		public Color UnSelectedColor
 		{
 			get { return unSelectedColor; }
