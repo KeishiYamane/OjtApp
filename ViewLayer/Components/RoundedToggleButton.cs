@@ -8,10 +8,58 @@ namespace ViewLayer.Components
 		public RoundedToggleButton()
 		{
 			InitializeComponent();
+			this.Load += RoundedToggleButton_Load;
 		}
 
-		private Color onBackColor = Color.FromArgb(50, 230, 80);  // 緑色 (ON:活性化)
+		private Color onBackColor = Color.FromArgb(125, 220, 255);
+		/// <summary>
+		/// ON状態の時の背景色を取得または設定します
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("ON状態の時の背景色を設定します")]
+		[DefaultValue(typeof(Color), "125, 220, 255")]
+		public Color OnBackColor
+		{
+			get { return onBackColor; }
+			set
+			{
+				if (onBackColor != value)
+				{
+					onBackColor = value;
+					if (isChecked) // 現在ON状態の場合は即座に反映
+					{
+						BackgroundColor = onBackColor;
+					}
+					Invalidate(); // 再描画
+				}
+			}
+		}
+
 		private Color offBackColor = Color.FromArgb(189, 189, 189); // 灰色 (OFF)
+		/// <summary>
+		/// OFF状態の時の背景色を取得または設定します
+		/// </summary>
+		[Browsable(true)]
+		[Category("Appearance")]
+		[Description("OFF状態の時の背景色を設定します")]
+		[DefaultValue(typeof(Color), "189, 189, 189")]
+		public Color OffBackColor
+		{
+			get { return offBackColor; }
+			set
+			{
+				if (offBackColor != value)
+				{
+					offBackColor = value;
+					if (!isChecked) // 現在OFF状態の場合は即座に反映
+					{
+						BackgroundColor = offBackColor;
+					}
+					Invalidate(); // 再描画
+				}
+			}
+		}
 
 		private bool isChecked = false;
 		/// <summary>
@@ -90,6 +138,14 @@ namespace ViewLayer.Components
 			{
 				Checked = !Checked; // 状態を反転
 			}
+		}
+
+		private void RoundedToggleButton_Load(object? sender, EventArgs e)
+		{
+			// 初期状態を設定（デザイナーでドロップした時にOFF状態にする）
+			Text = offText;
+			BackgroundColor = offBackColor;
+			isChecked = false;
 		}
 	}
 }
